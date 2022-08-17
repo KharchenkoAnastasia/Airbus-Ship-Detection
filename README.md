@@ -6,6 +6,7 @@ File train.py -training  model
 
 File test.py - testing model
 
+train.ipynb,test.ipynb - created to Colaboratory
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Install libraries:
