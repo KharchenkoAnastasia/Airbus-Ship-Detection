@@ -8,6 +8,8 @@ File test.py - testing model
 
 train.ipynb,test.ipynb - created to Colaboratory
 
+unet_model.h5 - pretrained Unet model on the Google Drive ( https://drive.google.com/file/d/1axLitu1kLltgPIXiA-NJ11khvdItTD9a/view?usp=sharing ), because unet_model.h5 is 170.92 MB; this exceeds GitHub's file size limit of 100.00 MB
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Install libraries:
 
