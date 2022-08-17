@@ -107,11 +107,11 @@ Keras data generator. A data generator is used to load and process images during
 
     Loss: dice 
 
-    teps_per_epoch=2
+    teps_per_epoch=20
 
-    epochs=5
+    epochs=10
 
-    validation_steps=3
+    validation_steps=5
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
