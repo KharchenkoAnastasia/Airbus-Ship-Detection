@@ -1,6 +1,8 @@
 # Airbus-Ship-Detection
 
+These notebooks detail my solution to Kaggle's Airbus Ship Detection challenge.
 
+The goal of the competition is to analyze satellite images of container ships and produce segmentation masks of the ships.
 
 File train.py -training  model
 
