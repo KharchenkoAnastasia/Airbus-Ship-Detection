@@ -8,6 +8,7 @@ The goal of the competition is to analyze satellite images of container ships an
 
 - **unet_model.h5** - binary file that stores model
 - **train.py** - python file that prepare, train and save model
+- **loss.py** -python file that implements the loss function used to train the segmentation model
 - **test.py** - python file that takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder
 - **requarements.txt** - file  that prepares the environment
 - **train.ipynb,test.ipynb** - created to Colaboratory
@@ -18,10 +19,10 @@ The goal of the competition is to analyze satellite images of container ships an
 - Python 3.x
 - TensorFlow
 - Keras
-- scikit-learn
+- Scikit-learn
 - NumPy
-- -matplotlib
-- pandas
+- Matplotlib
+- Pandas
 - PIL (Python Imaging Library)
 
 
@@ -38,24 +39,24 @@ pip install -r requirements.txt
 
 ### **test.py**
 
-The inference_script.py takes a directory path as a command-line argument and performs inference on all images in that directory.The output is that the segmented masks are saved as separate image files in the "image_mask" folder.
+The inference_script.py takes a directory path as a command-line argument and performs inference on all images in that directory.The output is that the segmented masks are saved as separate image files in the "image_mask" folder in the user-specified directory.
 
 1. Open a terminal or command prompt on your computer.
-2. Navigate to the directory where the "inference_script.py" file
+2. Navigate to the directory where the "inference_script.py" file. It is necessary that the files test.py, loss.py, unet_model.h5 were in the same directory
 3. Replace <directory_path> in the command with the actual path to the directory containing your image samples. Make sure to provide the full path or relative path depending on your file system. 
 
 ```bash
-python inference_script.py <directory_path>
+python test.py <directory_path>
 ```
 
 ### **train.py**
-The handwritten_recog.py prepares, trains, and saves the neural network model. It is responsible for designing the architecture and training the model using the dataset.
+The train.py prepares, trains, and saves the neural network model. It is responsible for designing the architecture and training the model using the dataset.
 
 
 To run the training script, use the following command:
 
 ```bash
-python handwritten_recog.py
+python train.py
 ```
 
 
@@ -72,12 +73,19 @@ Ensure that the training dataset is properly configured and accessible within th
 
 
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-1. Data Preparation
 
 
-![sample_submission_v2 jpg](https://user-images.githubusercontent.com/47922202/185092819-fba413bc-f65c-4fc5-9177-94537e539034.png)
+#### **Data Preparation**
+
+
+``` python
+         ImageId                                      EncodedPixels  withShip
+0  00003e153.jpg                                                NaN     False
+1  0001124c7.jpg                                                NaN     False
+2  000155de5.jpg  264661 17 265429 33 266197 33 266965 33 267733...      True
+3  000194a2d.jpg  360486 1 361252 4 362019 5 362785 8 363552 10 ...      True
+4  000194a2d.jpg  51834 9 52602 9 53370 9 54138 9 54906 9 55674 ...      True
+```
 
 
 
@@ -94,68 +102,106 @@ Example data
 
 I plotted the histogram for the image ship counts and noticed that most images contain no ship.
 
-![the image ship counts ](https://user-images.githubusercontent.com/47922202/185091790-fdd19bd0-44d2-4297-94f1-bd6ec697c480.jpg)
+![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/59cf07ec-ff6c-4ccc-8670-0140d02df9a7)
 
 Only images with ships were taken and 80% images
 
-
-![balace data](https://user-images.githubusercontent.com/47922202/185091750-961e8563-0f33-40e0-84a7-f657319c0350.jpg)
+```python
+    # Balance the data
+    DROP_NO_SHIP_FRACTION = 0.8
+    bal_train_csv=train_csv.set_index('ImageId').drop(
+        train_csv.loc[
+            train_csv.isna().any(axis=1),
+            'ImageId'
+        ]).reset_index()
+    
+    bal_train_csv=bal_train_csv.sample( frac = DROP_NO_SHIP_FRACTION , random_state=1)
+```
 
 Below is an image of the histogram for the down sampled distribution.
 
+![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/8d9e5f10-6ac1-4b2a-aafc-066d3096846d)
 
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-2. Generate data for model
+#### **Generate data for model**
 
 
 I did an 70/30% split of data for training and validation.
 Keras data generator. A data generator is used to load and process images during training. The dataset is too large to be loaded and porcessed onced, by using a data generator only a small portion of the imagies is loaded at a time.
 
+```python
+# Keras data generator
+def masks_as_image(in_mask_list):
+    # Take the individual ship masks and create a single mask array for all ships
+    all_masks = np.zeros((768, 768), dtype = np.int16)
+    #if isinstance(in_mask_list, list):
+    for mask in in_mask_list:
+        if isinstance(mask, str):
+            all_masks += rle_decode(mask)
+    return np.expand_dims(all_masks, -1)
 
-![generator](https://user-images.githubusercontent.com/47922202/185092242-957ee84a-b360-4b46-b2bd-09a113117a05.jpg)
+# Hyper parameters
+IMG_SCALING = (3,3)
+
+def keras_generator(gen_df, batch_size=4):
+    all_batches = list(gen_df.groupby('ImageId'))
+    out_rgb = []
+    out_mask = []
+    while True:
+        np.random.shuffle(all_batches)
+        for c_img_id, c_masks in all_batches:
+            rgb_path = os.path.join(TRAIN_V2, c_img_id)
+            c_img = imread(rgb_path)
+            c_mask = masks_as_image(c_masks['EncodedPixels'].values)
+            if IMG_SCALING is not None:
+                c_img = c_img[::IMG_SCALING[0], ::IMG_SCALING[1]]
+                c_mask = c_mask[::IMG_SCALING[0], ::IMG_SCALING[1]]
+            out_rgb += [c_img]
+            out_mask += [c_mask]
+            if len(out_rgb)>=batch_size:
+                yield np.stack(out_rgb, 0)/255.0, np.stack(out_mask, 0).astype(np.float)
+                
+                out_rgb, out_mask=[], []
+
+```
+
+
+#### **Design the Model**
+
+ 
+The U-Net model is a popular architecture commonly used for image segmentation tasks, including ship detection. It is named after its U-shaped architecture.
+The model consists of a contracting path (encoder) and an expanding path (decoder). The contracting path captures the context and reduces the spatial dimensions of the input image, while the expanding path recovers the spatial information and generates the segmentation mask.
+   
 
 
 
-![test_generator](https://user-images.githubusercontent.com/47922202/185092350-ae30a360-fc1c-43f2-a62a-13a900dd68e8.jpg)
+#### **Train the Neural Network**
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-3. Design the Model
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-4. Train the Neural Network
-
-    Optimizer: Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-
-    Loss: dice 
-
-    teps_per_epoch=20
-
-    epochs=10
-
-    validation_steps=5
+```python
+    # Compile the model
+    adam = tf.keras.optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+    unet_model.compile(optimizer='adam', loss=loss, metrics=[ 'binary_accuracy'])
+    # Train the model
+    history = unet_model.fit_generator(keras_generator(train_csv),
+                                            steps_per_epoch=steps_per_epoch, 
+                                            epochs=epochs, 
+                                            validation_data=keras_generator(valid_csv),
+                                            validation_steps=validation_steps)
+```
 
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-5. Plotting Results
 
 
-![image](https://user-images.githubusercontent.com/47922202/185146091-d65acd83-79f1-4dff-806c-a7638c2dee04.png)
+#### **Evaluate the model**
 
-![image](https://user-images.githubusercontent.com/47922202/185146191-e58aea6e-7a4a-4db8-8886-9e658a540d45.png)
+![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/dc96c09c-4be7-48e2-96fb-c569ec9dba6d)
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/25504a6e-35f7-4c7a-b6e4-295425c4b06c)
 
-6. Visualize predictions
 
-![predict](https://user-images.githubusercontent.com/47922202/185101620-fb25e941-7b56-4bbd-aad6-d9fc4d5e85ea.jpg)
 
+#### **Visualize predictions
 
 ![image](https://user-images.githubusercontent.com/47922202/185146257-acd22268-652e-4df3-beb0-72a96e5cb2ba.png)
 
