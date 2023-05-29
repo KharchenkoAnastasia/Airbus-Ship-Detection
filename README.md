@@ -1,49 +1,74 @@
 # Airbus-Ship-Detection
+### **Description**
+
 
 These notebooks detail my solution to Kaggle's Airbus Ship Detection challenge.
 
 The goal of the competition is to analyze satellite images of container ships and produce segmentation masks of the ships.
 
-File train.py -training  model
-
-File test.py - testing model
-
-train.ipynb,test.ipynb - created to Colaboratory
-
-unet_model.h5 - pretrained Unet model on the Google Drive ( https://drive.google.com/file/d/1axLitu1kLltgPIXiA-NJ11khvdItTD9a/view?usp=sharing ), because unet_model.h5 is 170.92 MB; this exceeds GitHub's file size limit of 100.00 MB
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Install libraries:
-
-pip install scikit-learn
-
-pip install keras 
-
-pip install  numpy 
-
-pip install pandas 
-
-pip install matplotlib 
-
-pip install skimage 
-
-pip install tensorflow
-
-pip install segmentation-models
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- **unet_model.h5** - binary file that stores model
+- **train.py** - python file that prepare, train and save model
+- **test.py** - python file that takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder
+- **requarements.txt** - file  that prepares the environment
+- **train.ipynb,test.ipynb** - created to Colaboratory
 
 
-About the Data:
+
+### **Prerequisites**
+- Python 3.x
+- TensorFlow
+- Keras
+- scikit-learn
+- NumPy
+- -matplotlib
+- pandas
+- PIL (Python Imaging Library)
 
 
-        •	train_ship_segmentations_v2.csv: This file contains the RLE (Run Length Encoded is a way to encode image pixels in a more summerized way, especially when images have a black or white background) masks of ships in each image. If there are no ships, the EncodedPixel column is blank.
 
-        •	train_v2: v2 contains the combined Train and Test images of the original dataset.
+### **Installation**
 
-        •	test_v2: A folder with test images, size 768x768 px.
+#### Install the required dependencies:
 
-        •	sample_submission_v2csv: a file containing all the ImageId for the predictions of ships on those images.
+
+```bash
+pip install -r requirements.txt 
+```
+
+
+### **test.py**
+
+The inference_script.py takes a directory path as a command-line argument and performs inference on all images in that directory.The output is that the segmented masks are saved as separate image files in the "image_mask" folder.
+
+1. Open a terminal or command prompt on your computer.
+2. Navigate to the directory where the "inference_script.py" file
+3. Replace <directory_path> in the command with the actual path to the directory containing your image samples. Make sure to provide the full path or relative path depending on your file system. 
+
+```bash
+python inference_script.py <directory_path>
+```
+
+### **train.py**
+The handwritten_recog.py prepares, trains, and saves the neural network model. It is responsible for designing the architecture and training the model using the dataset.
+
+
+To run the training script, use the following command:
+
+```bash
+python handwritten_recog.py
+```
+
+
+Ensure that the training dataset is properly configured and accessible within the script. You may need to adjust the script parameters, such as the number of epochs or batch size, to suit your specific requirements.
+
+#### **Dataset**
+
+
+
+- train_ship_segmentations_v2.csv: This file contains the RLE (Run Length Encoded is a way to encode image pixels in a more summerized way, especially when images have a black or white background) masks of ships in each image. If there are no ships, the EncodedPixel column is blank.
+- train_v2: v2 contains the combined Train and Test images of the original dataset.
+- test_v2: A folder with test images, size 768x768 px.
+- sample_submission_v2csv: a file containing all the ImageId for the predictions of ships on those images.
 
 
 
