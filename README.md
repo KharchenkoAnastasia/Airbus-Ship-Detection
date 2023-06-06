@@ -29,31 +29,48 @@ The goal of the competition is to analyze satellite images of container ships an
 
 ### **Installation**
 
-#### Install the required dependencies:
+To set up the Airbus Ship Detection project on your local machine, follow these steps:
 
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/Airbus-Ship-Detection.git
+```
+2. Navigate to the project directory
+
+```bash
+cd Airbus-Ship-Detection
+```
+
+3. Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt 
 ```
 
 
-### **test.py**
+### **Usage inference_script.py**
 
-The inference_script.py takes a directory path as a command-line argument and performs inference on all images in that directory.The output is that the segmented masks are saved as separate image files in the "image_mask" folder in the user-specified directory.
+The inference_script.py takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder in the user-specified directory.
 
 1. Open a terminal or command prompt on your computer.
-2. Navigate to the directory where the "inference_script.py" file. It is necessary that the files test.py, loss.py, unet_model.h5 were in the same directory
-3. Replace <directory_path> in the command with the actual path to the directory containing your image samples. Make sure to provide the full path or relative path depending on your file system. 
+2. Navigate to the directory where the "inference_script.py" file. Make sure that the files inference_script.py, loss.py, unet_model.h5 were in the same directory.
+3. Replace <directory_path> in the command with the actual path to the directory containing your image samples. 
 
 ```bash
-python test.py <directory_path>
+python inference_script.py <directory_path>
+```
+Example
+
+```bash
+python inference_script.py <directory_path>
 ```
 
-### **train.py**
+### **Usage train.py**
 The train.py prepares, trains, and saves the neural network model. It is responsible for designing the architecture and training the model using the dataset.
 
-
-To run the training script, use the following command:
+1. Navigate to the directory where the "train.py" file. Make sure that the files train.py, loss.py were in the same directory.
+2. To run the training script, use the following command:
 
 ```bash
 python train.py
@@ -104,67 +121,11 @@ I plotted the histogram for the image ship counts and noticed that most images c
 
 ![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/59cf07ec-ff6c-4ccc-8670-0140d02df9a7)
 
-Only images with ships were taken and 80% images
-
-```python
-    # Balance the data
-    DROP_NO_SHIP_FRACTION = 0.8
-    bal_train_csv=train_csv.set_index('ImageId').drop(
-        train_csv.loc[
-            train_csv.isna().any(axis=1),
-            'ImageId'
-        ]).reset_index()
-    
-    bal_train_csv=bal_train_csv.sample( frac = DROP_NO_SHIP_FRACTION , random_state=1)
-```
+The training data was balanced by removing images without ships and sampling a fraction of the remaining images
 
 Below is an image of the histogram for the down sampled distribution.
 
 ![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/8d9e5f10-6ac1-4b2a-aafc-066d3096846d)
-
-
-
-#### **Generate data for model**
-
-
-I did an 70/30% split of data for training and validation.
-Keras data generator. A data generator is used to load and process images during training. The dataset is too large to be loaded and porcessed onced, by using a data generator only a small portion of the imagies is loaded at a time.
-
-```python
-# Keras data generator
-def masks_as_image(in_mask_list):
-    # Take the individual ship masks and create a single mask array for all ships
-    all_masks = np.zeros((768, 768), dtype = np.int16)
-    #if isinstance(in_mask_list, list):
-    for mask in in_mask_list:
-        if isinstance(mask, str):
-            all_masks += rle_decode(mask)
-    return np.expand_dims(all_masks, -1)
-
-# Hyper parameters
-IMG_SCALING = (3,3)
-
-def keras_generator(gen_df, batch_size=4):
-    all_batches = list(gen_df.groupby('ImageId'))
-    out_rgb = []
-    out_mask = []
-    while True:
-        np.random.shuffle(all_batches)
-        for c_img_id, c_masks in all_batches:
-            rgb_path = os.path.join(TRAIN_V2, c_img_id)
-            c_img = imread(rgb_path)
-            c_mask = masks_as_image(c_masks['EncodedPixels'].values)
-            if IMG_SCALING is not None:
-                c_img = c_img[::IMG_SCALING[0], ::IMG_SCALING[1]]
-                c_mask = c_mask[::IMG_SCALING[0], ::IMG_SCALING[1]]
-            out_rgb += [c_img]
-            out_mask += [c_mask]
-            if len(out_rgb)>=batch_size:
-                yield np.stack(out_rgb, 0)/255.0, np.stack(out_mask, 0).astype(np.float)
-                
-                out_rgb, out_mask=[], []
-
-```
 
 
 #### **Design the Model**
@@ -172,6 +133,22 @@ def keras_generator(gen_df, batch_size=4):
  
 The U-Net model is a popular architecture commonly used for image segmentation tasks, including ship detection. It is named after its U-shaped architecture.
 The model consists of a contracting path (encoder) and an expanding path (decoder). The contracting path captures the context and reduces the spatial dimensions of the input image, while the expanding path recovers the spatial information and generates the segmentation mask.
+
+The model is constructed:
+
+1. The input shape of the model is defined as (256, 256, 3) which means the input images are expected to have a height and width of 256 pixels and three color channels (RGB).
+
+2. Several convolutional layers (Conv2D) with a kernel size of (3, 3) and ReLU activation function are used to extract features from the input image. The number of filters in each convolutional layer increases from 8 to 128, capturing increasingly complex patterns.
+
+3. After each pair of convolutional layers, a max-pooling layer (MaxPooling2D) with a pool size of (2, 2) is applied to downsample the feature maps, reducing their spatial dimensions while retaining important features.
+
+4. The encoding path continues with additional convolutional layers and max-pooling layers until reaching the bottleneck layer (c5), which has 128 filters.
+
+5. The decoding path starts with upsampling (UpSampling2D) of the bottleneck layer (c5) and concatenation (Concatenate) with the corresponding feature maps from the encoding path (c4, c3, c2, c1).
+
+6. Each upsampling step is followed by a pair of convolutional layers to refine the feature maps.
+
+7. Finally, a 1x1 convolutional layer with a sigmoid activation function is used to produce the final segmentation mask.
    
 
 
@@ -193,7 +170,7 @@ The model consists of a contracting path (encoder) and an expanding path (decode
 
 
 
-#### **Evaluate the model**
+#### **results of training and model validation**
 
 ![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/dc96c09c-4be7-48e2-96fb-c569ec9dba6d)
 
@@ -201,7 +178,7 @@ The model consists of a contracting path (encoder) and an expanding path (decode
 
 
 
-#### **Visualize predictions
+#### **Visualize predictions**
 
 ![image](https://user-images.githubusercontent.com/47922202/185146257-acd22268-652e-4df3-beb0-72a96e5cb2ba.png)
 
