@@ -163,9 +163,9 @@ The Adam optimizer and Dice coefficient were used during model training. The bin
 
 #### **results of training and model validation**
 
-![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/dc96c09c-4be7-48e2-96fb-c569ec9dba6d)
+![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/654a629b-17d2-4806-90a8-ccc34a003e25)
 
-![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/25504a6e-35f7-4c7a-b6e4-295425c4b06c)
+![image](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection/assets/47922202/2b18454c-89aa-439c-bd84-a0ccf33f076b)
 
 
 
