@@ -63,7 +63,7 @@ python inference_script.py <directory_path>
 Example
 
 ```bash
-python inference_script.py <directory_path>
+D:\Airbus Ship Detection\Airbus Ship Detection\MY> python inference_script.py "D:/Airbus Ship Detection/Airbus Ship Detection/test_images"
 ```
 
 ### **Usage train.py**
