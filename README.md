@@ -9,7 +9,7 @@ The goal of the competition is to analyze satellite images of container ships an
 - **unet_model.h5** - binary file that stores model
 - **train.py** - python file that prepare, train and save model
 - **loss.py** -python file that implements the loss function used to train the segmentation model
-- **test.py** - python file that takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder
+- **inference_script.py** - python file that takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder
 - **requarements.txt** - file  that prepares the environment
 - **train.ipynb,test.ipynb** - created to Colaboratory
 
@@ -155,17 +155,8 @@ The model is constructed:
 
 #### **Train the Neural Network**
 
-```python
-    # Compile the model
-    adam = tf.keras.optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-    unet_model.compile(optimizer='adam', loss=loss, metrics=[ 'binary_accuracy'])
-    # Train the model
-    history = unet_model.fit_generator(keras_generator(train_csv),
-                                            steps_per_epoch=steps_per_epoch, 
-                                            epochs=epochs, 
-                                            validation_data=keras_generator(valid_csv),
-                                            validation_steps=validation_steps)
-```
+The Adam optimizer and Dice coefficient were used during model training. The binary accuracy metric was used to monitor the model's accuracy in predicting ship or no-ship labels.
+
 
 
 
