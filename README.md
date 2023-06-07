@@ -34,7 +34,7 @@ To set up the Airbus Ship Detection project on your local machine, follow these 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/Airbus-Ship-Detection.git
+[git clone https://github.com/your-username/Airbus-Ship-Detection.git](https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection.git)
 ```
 2. Navigate to the project directory
 
