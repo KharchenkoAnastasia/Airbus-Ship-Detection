@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "airbus-ship-detection"
+version = "0.1.0"
+description = ""
+authors = ["KharchenkoAnastasia <kharchenko.13.08@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+onetoonemap = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
