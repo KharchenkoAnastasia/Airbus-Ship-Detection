@@ -1,12 +1,10 @@
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from airbus_ship_detection.data_processing import (
-    ship_count_distribution,
-    show_example_data,
     balance_data
 )
+from airbus_ship_detection.data_exploration import ship_count_distribution, show_example_data
 from airbus_ship_detection.model import UNet
 
 TRAIN_V2 = r"D:\Images_Airbus_Ship_Detection\train_v2"
@@ -44,7 +42,7 @@ def main():
     unet_model.compile_model()
 
     unet_model.fit_model(train_csv, TRAIN_V2, valid_csv,TRAIN_V2, epochs)
-    unet_model.evaluate_model()
+    unet_model.plot_training_history()
     unet_model.save_model()
 
 
