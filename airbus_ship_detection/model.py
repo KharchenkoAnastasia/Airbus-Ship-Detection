@@ -1,16 +1,17 @@
-import os
+from pathlib import Path
 import tensorflow as tf
 from keras.models import Model
 from keras.layers import Input, Concatenate, UpSampling2D, Conv2D, MaxPooling2D
-from utils.loss import loss
+from airbus_ship_detection.utils.loss import loss
 from airbus_ship_detection.data_processing import augment_images,keras_generator
 import matplotlib.pyplot as plt
 
 
 class UNet(Model):
     def __init__(self):
-        super(UNet, self).__init__()
+        super().__init__()
         self.build_model()
+        self.unet_model.summary()
 
     def build_model(self):
         """
@@ -60,7 +61,7 @@ class UNet(Model):
         o = Conv2D(1, (1, 1), activation='sigmoid', padding='same')(c9)
 
         self.unet_model = Model(inputs=[img], outputs=[o])
-        self.unet_model.summary()
+
 
     def compile_model(self):
         """
@@ -83,9 +84,9 @@ class UNet(Model):
                                            validation_data=keras_generator(valid_csv,valid_images),
                                            validation_steps=self.validation_steps)
 
-    def evaluate_model(self):
+    def plot_training_history(self):
         """
-        Evaluate and plot the training and validation results.
+        Plot the training and validation results.
         """
         plt.figure()
         plt.plot(self.history.history['loss'], label='train')
@@ -107,11 +108,7 @@ class UNet(Model):
 
     def save_model(self):
         # Save the model
-        model_folder = os.path.join(os.path.dirname(__file__), '..', 'model')
-
-        # Create the directory if it doesn't exist
-        if not os.path.exists(model_folder):
-            os.makedirs(model_folder)
-
-        model_path = os.path.join(model_folder, 'unet_model.h5')
-        self.unet_model.save(model_path)
+        model_folder = Path(__file__).resolve().parent.parent / 'model'
+        model_folder.mkdir(parents=True, exist_ok=True)
+        model_path = model_folder / 'unet_model.h5'
+        self.unet_model.save(str(model_path))
