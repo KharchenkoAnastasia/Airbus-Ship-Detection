@@ -4,10 +4,10 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 import sys
-from utils.loss import loss
+from airbus_ship_detection.utils.loss import loss
 
 # Load the saved model
-model_path = os.path.join('model', 'unet_model.h5')
+model_path = os.path.join('../model', 'unet_model.h5')
 unet_model = tf.keras.models.load_model(model_path,custom_objects={'loss': loss})
 
 def main(directory):   
