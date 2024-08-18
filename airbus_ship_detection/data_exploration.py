@@ -1,15 +1,18 @@
 from pathlib import Path
+from typing import Any, List
+
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
-from skimage.io import imread
+from PIL import Image
 
 
-def ship_count_distribution(train_csv):
+def ship_count_distribution(train_csv: pd.DataFrame) -> None:
     """
     Create a bar plot showing the distribution of ship counts in the dataset.
 
     Args:
-        train_csv (DataFrame): DataFrame containing ship information.
+        train_csv (pd.DataFrame): DataFrame containing ship information.
 
     Returns:
         None: Displays the plot.
@@ -23,22 +26,22 @@ def ship_count_distribution(train_csv):
     plt.show()
 
 
-def rle_decode(mask_rle, shape=(768, 768)):
+def rle_decode(mask_rle: str, shape: tuple[int, int] = (768, 768)) -> np.ndarray[np.uint8,Any]:
     """
         Decode a run-length encoded mask and return it as a numpy array.
 
         Args:
             mask_rle (str): Run-length encoded mask in the format (start length).
-            shape (tuple): Desired shape (height, width) of the returned array.
+            shape (tuple[int, int]): Desired shape (height, width) of the returned array.
 
         Returns:
             numpy.ndarray: Decoded mask where 1 represents the mask and 0 represents the background.
-
     """
     mask = np.zeros(shape[0] * shape[1], dtype=np.uint8)
-    mask_rle = mask_rle.split()
-    mask_starts = [int(mask_rle[i]) - 1 for i in range(0, len(mask_rle), 2)]
-    mask_lengths = [int(mask_rle[i + 1]) for i in range(0, len(mask_rle), 2)]
+    #mask = np.zeros(shape[0] * shape[1])
+    mask_rle_split = mask_rle.split()
+    mask_starts = [int(mask_rle_split[i]) - 1 for i in range(0, len(mask_rle_split), 2)]
+    mask_lengths = [int(mask_rle_split[i + 1]) for i in range(0, len(mask_rle_split), 2)]
     for start, length in zip(mask_starts, mask_lengths):
         mask[start: start + length] = 1
 
@@ -46,32 +49,43 @@ def rle_decode(mask_rle, shape=(768, 768)):
     return mask
 
 
-def show_example_data(ImageId, train_csv,image_dataset):
-    """"
-        Display an example of an image and its corresponding masks.
+def show_example_data(ImageId: str, train_csv: pd.DataFrame, image_dataset: str) -> None:
     """
-    img = imread(Path(image_dataset) / ImageId)
+    Display an example of an image and its corresponding masks.
+
+    Args:
+        ImageId (str): Identifier for the image.
+        train_csv (pd.DataFrame): DataFrame containing image information and masks.
+        image_dataset (str): Path to the dataset directory.
+
+    Returns:
+        None: Displays the image and mask plot.
+    """
+    img = np.array(Image.open(Path(image_dataset) / ImageId), dtype=np.uint8)
     img_masks = train_csv.loc[train_csv['ImageId'] == ImageId, 'EncodedPixels'].tolist()
-    all_masks = np.zeros((768, 768))
-    all_masks = np.bitwise_or.reduce([rle_decode(mask) for mask in img_masks], axis=0)
+    all_masks = masks_as_image(img_masks)
 
     fig, axarr = plt.subplots(1, 3, figsize=(15, 40))
+
     for ax in axarr:
         ax.axis('off')
     axarr[0].imshow(img)
     axarr[1].imshow(all_masks)
     axarr[2].imshow(img)
     axarr[2].imshow(all_masks, alpha=0.4)
+
+
     plt.tight_layout(h_pad=0.1, w_pad=0.1)
+    plt.axis('off')
     plt.show()
 
 
-def masks_as_image(in_mask_list):
+def masks_as_image(in_mask_list: List[str]) -> np.ndarray[np.uint8,Any]:
     """
     Take the individual ship masks and create a single mask array for all ships
     """
-    all_masks = np.zeros((768, 768), dtype=np.int16)
+    all_masks = np.zeros((768, 768), dtype=np.uint8)
     for mask in in_mask_list:
         if isinstance(mask, str):
             all_masks |= rle_decode(mask)
-    return np.expand_dims(all_masks, -1)
+    return np.expand_dims(all_masks, axis=-1)
