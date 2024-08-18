@@ -1,19 +1,22 @@
 from pathlib import Path
-import tensorflow as tf
-from keras.models import Model
-from keras.layers import Input, Concatenate, UpSampling2D, Conv2D, MaxPooling2D
-from airbus_ship_detection.utils.loss import loss
-from airbus_ship_detection.data_processing import augment_images,keras_generator
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import tensorflow as tf
+from keras.layers import Concatenate, Conv2D, Input, MaxPooling2D, UpSampling2D
+from tensorflow.keras.models import Model
+
+from airbus_ship_detection.data_processing import augment_images, keras_generator
+from airbus_ship_detection.utils.loss import loss
 
 
-class UNet(Model):
-    def __init__(self):
-        super().__init__()
+class UNet():
+    def __init__(self) -> None:
+        #super().__init__()
         self.build_model()
         self.unet_model.summary()
 
-    def build_model(self):
+    def build_model(self) -> None:
         """
         Build the U-Net model architecture.
         """
@@ -63,7 +66,7 @@ class UNet(Model):
         self.unet_model = Model(inputs=[img], outputs=[o])
 
 
-    def compile_model(self):
+    def compile_model(self) -> None:
         """
         Compile the U-Net model.
         """
@@ -71,7 +74,7 @@ class UNet(Model):
                                              amsgrad=False)
         self.unet_model.compile(optimizer='adam', loss=loss, metrics=['binary_accuracy'])
 
-    def fit_model(self, train_csv, train_images, valid_csv, valid_images, epochs):
+    def fit_model(self, train_csv: pd.DataFrame, train_images: str, valid_csv: pd.DataFrame, valid_images: str, epochs: int) -> None:
         """
         Fit the U-Net model to the training data.
         """
@@ -84,7 +87,7 @@ class UNet(Model):
                                            validation_data=keras_generator(valid_csv,valid_images),
                                            validation_steps=self.validation_steps)
 
-    def plot_training_history(self):
+    def plot_training_history(self) -> None:
         """
         Plot the training and validation results.
         """
@@ -106,7 +109,7 @@ class UNet(Model):
         plt.legend()
         plt.show()
 
-    def save_model(self):
+    def save_model(self) -> None:
         # Save the model
         model_folder = Path(__file__).resolve().parent.parent / 'model'
         model_folder.mkdir(parents=True, exist_ok=True)
