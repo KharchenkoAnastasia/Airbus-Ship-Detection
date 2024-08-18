@@ -1,16 +1,17 @@
 import os
-import numpy as np
-#mport cv2
-from PIL import Image
-import tensorflow as tf
 import sys
+
+import numpy as np
+import tensorflow as tf
+from PIL import Image
+
 from airbus_ship_detection.utils.loss import loss
 
 # Load the saved model
 model_path = os.path.join('../model', 'unet_model.h5')
 unet_model = tf.keras.models.load_model(model_path,custom_objects={'loss': loss})
 
-def main(directory):   
+def main(directory: str) -> None:
         # Create the "image_mask" folder if it doesn't exist
         mask_folder = os.path.join(directory, "image_mask")
         os.makedirs(mask_folder, exist_ok=True)
