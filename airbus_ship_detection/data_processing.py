@@ -1,20 +1,24 @@
 from pathlib import Path
+from typing import Any, Generator, Iterable, Tuple, Union
+
 import numpy as np
+import pandas as pd
 from skimage.io import imread
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
 from airbus_ship_detection.data_exploration import masks_as_image
 
 
-def balance_data(train_csv, drop_no_ship_fraction=0.8):
+def balance_data(train_csv: pd.DataFrame, fraction: float = 0.8) -> pd.DataFrame:
     """
         Balance the training data by removing images without ships and sampling a fraction of the remaining data.
 
         Args:
             train_csv (DataFrame): DataFrame containing the training data.
-            drop_no_ship_fraction (float): Fraction of images without ships to drop. Default is 0.8.
+            fraction (float): Fraction of images without ships to drop. Default is 0.8.
 
         Returns:
-            DataFrame: Balanced training data DataFrame, containing a subset of images with ships.
+            pd.DataFrame: Balanced training data DataFrame, containing a subset of images with ships.
 
     """
     # Delete images without ships
@@ -25,24 +29,28 @@ def balance_data(train_csv, drop_no_ship_fraction=0.8):
         ]).reset_index()
 
     # Fraction of images
-    bal_train_csv = bal_train_csv.sample(frac=drop_no_ship_fraction, random_state=1)
+    bal_train_csv = bal_train_csv.sample(frac=fraction, random_state=1)
 
     return bal_train_csv
 
 
-def keras_generator(gen_df,  image_dataset, batch_size=8):
+def keras_generator(
+    gen_df: pd.DataFrame,
+    image_dataset: Union[str, Path],
+    batch_size: int = 8
+) -> Generator[Tuple[np.ndarray[np.uint8,Any], np.ndarray[np.uint8,Any]], None, None]:
     """
-   Generate batches of RGB images and corresponding masks from the input DataFrame.
+    Generate batches of RGB images and corresponding masks from the input DataFrame.
 
-   Args:
-       gen_df (DataFrame): DataFrame containing image and mask information.
-       batch_size (int): Number of samples per batch. Default is BATCH_SIZE.
-       image_dataset: directory where images are stored.
+    Args:
+        gen_df (pd.DataFrame): DataFrame containing image and mask information.
+        image_dataset (Union[str, Path]): Directory where images are stored.
+        batch_size (int): Number of samples per batch. Default is 8.
 
-   Yields:
-       tuple: A tuple containing the batch of RGB images and corresponding masks.
+    Yields:
+        Tuple[np.ndarray, np.ndarray]: A tuple containing the batch of RGB images and corresponding masks.
               The RGB images are normalized to the range [0, 1], and masks are not normalized.
-   """
+    """
     IMG_SCALING = (3, 3)
     all_batches = list(gen_df.groupby('ImageId'))
     out_rgb = []
@@ -69,16 +77,17 @@ def keras_generator(gen_df,  image_dataset, batch_size=8):
                 out_rgb, out_mask = [], []
 
 
-def augment_images(images):
+def augment_images(
+    images: Iterable[Tuple[np.ndarray[np.uint8,Any], np.ndarray[np.uint8,Any]]]
+) -> Generator[Tuple[np.ndarray[np.uint8,Any], np.ndarray[np.uint8,Any]], None, None]:
     """
     Generate augmented images and masks using image data augmentation.
 
     Args:
-        images (iterable): Iterable containing pairs of original images and masks.
+        images (Iterable[Tuple[np.ndarray, np.ndarray]]): Iterable containing pairs of original images and masks.
 
     Yields:
-        tuple: A tuple containing the augmented images and masks.
-
+        Tuple[np.ndarray, np.ndarray]: A tuple containing the augmented images and masks.
     """
     # Define the augmentation settings
     aug_args = dict(
