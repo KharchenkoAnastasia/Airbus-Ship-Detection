@@ -1,21 +1,62 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools>=72.2.0", "setuptools-scm>=8.1.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["airbus_ship_detection"]
+
+[project]
 name = "airbus-ship-detection"
 version = "0.1.0"
+requires-python = ">= 3.9"
 description = ""
-authors = ["KharchenkoAnastasia <kharchenko.13.08@gmail.com>"]
+authors = [
+    { name = "KharchenkoAnastasia", email = "kharchenko.13.08@gmail.com" },
+]
 readme = "README.md"
+dependencies = [
+    "onetoonemap",
+    "requests",
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "tensorflow"
+    ]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-onetoonemap = "^1.0.0"
-package-name = "^0.1"
-requests = "^2.32.3"
-numpy = "1.26.4"
-pandas = "^2.2.2"
-scikit-learn = "1.5.1"
-tensorflow = "2.17.0"
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "ruff",
+    "mypy"
+    ]
 
+[tool.mypy]
+files = ["airbus_ship_detection"]
+plugins = ["numpy.typing.mypy_plugin"]
+pretty = true
+show_error_codes = true
+strict = true
+warn_unreachable = true
+ignore_missing_imports = true
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+  "scipy.*",
+  "sklearn.*",
+  "inflect.*",
+  "transformers.*",
+  "pattern.text.en.*",
+  "nltk.*"
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint]
+select = [
+    "I"          # isort
+]
