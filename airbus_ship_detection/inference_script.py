@@ -1,6 +1,6 @@
+import sys
 from pathlib import Path
 from typing import Union
-import sys
 
 import numpy as np
 import tensorflow as tf
@@ -22,9 +22,7 @@ def main(directory: Union[str, Path]) -> None:
     mask_folder.mkdir(parents=True, exist_ok=True)
 
     # Find all image files in the directory
-    image_files = [
-        f for f in directory.iterdir() if f.suffix.lower() in {".png", ".jpg", ".jpeg"}
-    ]
+    image_files = [f for f in directory.iterdir() if f.suffix.lower() in {".png", ".jpg", ".jpeg"}]
 
     # Perform segmentation and save the results
     for image_file in image_files:
