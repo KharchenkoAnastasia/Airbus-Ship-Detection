@@ -17,10 +17,10 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.11'
 
-    - name: index versions tensorflow
-      run: pip index versions tensorflow-intel
+    - name: Install tensorflow 2.17
+      run: pip install tensorflow==2.17.0
 
     - name: Install dependencies
       run: pip install -r requirements_test.txt

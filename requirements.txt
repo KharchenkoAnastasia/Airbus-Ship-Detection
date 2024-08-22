@@ -21,7 +21,7 @@ gast==0.6.0
     # via tensorflow-intel
 google-pasta==0.2.0
     # via tensorflow-intel
-grpcio==1.65.5
+grpcio==1.66.0
     # via
     #   tensorboard
     #   tensorflow-intel
