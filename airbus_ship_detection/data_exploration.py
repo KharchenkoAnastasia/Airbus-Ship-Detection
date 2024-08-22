@@ -34,9 +34,7 @@ def ship_count_distribution(train_csv: pd.DataFrame) -> None:
     plt.show()
 
 
-def rle_decode(
-    mask_rle: str, shape: tuple[int, int] = (768, 768)
-) -> npt.NDArray[np.uint8]:
+def rle_decode(mask_rle: str, shape: tuple[int, int] = (768, 768)) -> npt.NDArray[np.uint8]:
     """
     Decode a run-length encoded mask and return it as a numpy array.
 
@@ -51,9 +49,7 @@ def rle_decode(
     # mask = np.zeros(shape[0] * shape[1])
     mask_rle_split = mask_rle.split()
     mask_starts = [int(mask_rle_split[i]) - 1 for i in range(0, len(mask_rle_split), 2)]
-    mask_lengths = [
-        int(mask_rle_split[i + 1]) for i in range(0, len(mask_rle_split), 2)
-    ]
+    mask_lengths = [int(mask_rle_split[i + 1]) for i in range(0, len(mask_rle_split), 2)]
     for start, length in zip(mask_starts, mask_lengths):
         mask[start : start + length] = 1
 
