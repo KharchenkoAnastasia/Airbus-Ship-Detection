@@ -20,7 +20,7 @@ dependencies = [
     "numpy",
     "pandas",
     "scikit-learn",
-    "tensorflow",
+    "tensorflow==2.17.0",
     ]
 
 [project.optional-dependencies]
