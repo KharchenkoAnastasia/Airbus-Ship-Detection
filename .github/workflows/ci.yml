@@ -20,7 +20,7 @@ jobs:
         python-version: '3.11'
 
     - name: Install TensorFlow
-      run: pip install tensorflow-intel==2.10.0
+      run: pip install tensorflow-intel==0.0.1
 
     - name: Install dependencies
       run: pip install -r requirements_test.txt
