@@ -4,8 +4,8 @@ from typing import Generator, Iterable, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+from keras_preprocessing.image import ImageDataGenerator
 from skimage.io import imread
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from airbus_ship_detection.data_exploration import masks_as_image
 
@@ -111,11 +111,7 @@ def augment_images(
 
     # Generate augmented images and masks
     for image, mask in images:
-        augmented_images = image_datagen.flow(
-            255 * image, batch_size=image.shape[0], shuffle=True
-        )
-        augmented_masks = mask_datagen.flow(
-            mask, batch_size=image.shape[0], shuffle=True
-        )
+        augmented_images = image_datagen.flow(255 * image, batch_size=image.shape[0], shuffle=True)
+        augmented_masks = mask_datagen.flow(mask, batch_size=image.shape[0], shuffle=True)
 
         yield next(augmented_images) / 255.0, next(augmented_masks)

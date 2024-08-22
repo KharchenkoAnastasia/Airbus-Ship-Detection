@@ -4,7 +4,7 @@ from typing import Union
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
-from keras.layers import Concatenate, Conv2D, Input, MaxPooling2D, UpSampling2D
+from tensorflow.keras.layers import Concatenate, Conv2D, Input, MaxPooling2D, UpSampling2D
 from tensorflow.keras.models import Model
 
 from airbus_ship_detection.data_processing import augment_images, keras_generator
@@ -75,12 +75,9 @@ class UNet:
             beta_1=0.9,
             beta_2=0.999,
             epsilon=None,
-            decay=0.0,
             amsgrad=False,
         )
-        self.unet_model.compile(
-            optimizer="adam", loss=loss, metrics=["binary_accuracy"]
-        )
+        self.unet_model.compile(optimizer="adam", loss=loss, metrics=["binary_accuracy"])
 
     def fit_model(
         self,
