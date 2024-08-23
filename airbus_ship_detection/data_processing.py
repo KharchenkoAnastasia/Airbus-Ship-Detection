@@ -4,8 +4,8 @@ from typing import Generator, Iterable, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from keras_preprocessing.image import ImageDataGenerator
 from skimage.io import imread
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from airbus_ship_detection.data_exploration import masks_as_image
 
