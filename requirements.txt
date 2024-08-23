@@ -29,7 +29,7 @@ h5py==3.11.0
     # via
     #   keras
     #   tensorflow-intel
-idna==3.7
+idna==3.8
     # via requests
 joblib==1.4.2
     # via scikit-learn
