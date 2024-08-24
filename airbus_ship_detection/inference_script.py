@@ -27,7 +27,7 @@ def main(directory: Union[str, Path]) -> None:
     # Perform segmentation and save the results
     for image_file in image_files:
         image = Image.open(image_file).resize((256, 256))
-        image_array = np.expand_dims(image, 0) / 255.0
+        image_array = np.expand_dims(np.array(image), 0) / 255.0
         segmentation = unet_model.predict(image_array)
 
         # Save the mask segmentation image
@@ -43,6 +43,5 @@ if __name__ == "__main__":
         print("Usage: python inference_script.py <directory_path>")
         sys.exit(1)
 
-    # directory_path = r"{}".format(sys.argv[1])
     directory_path = sys.argv[1]
     main(directory_path)
