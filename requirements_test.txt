@@ -31,14 +31,18 @@ h5py==3.11.0
     # via
     #   keras
     #   tensorflow-intel
-idna==3.7
+idna==3.8
     # via requests
+imageio==2.35.1
+    # via scikit-image
 iniconfig==2.0.0
     # via pytest
 joblib==1.4.2
     # via scikit-learn
 keras==3.5.0
     # via tensorflow-intel
+lazy-loader==0.4
+    # via scikit-image
 libclang==18.1.1
     # via tensorflow-intel
 markdown==3.7
@@ -59,18 +63,23 @@ mypy-extensions==1.0.0
     # via mypy
 namex==0.0.8
     # via keras
+networkx==3.3
+    # via scikit-image
 numpy==1.26.4
     # via
     #   airbus-ship-detection (pyproject.toml)
     #   h5py
+    #   imageio
     #   keras
     #   ml-dtypes
     #   opt-einsum
     #   pandas
+    #   scikit-image
     #   scikit-learn
     #   scipy
     #   tensorboard
     #   tensorflow-intel
+    #   tifffile
 onetoonemap==1.0.0
     # via airbus-ship-detection (pyproject.toml)
 opt-einsum==3.3.0
@@ -80,11 +89,17 @@ optree==0.12.1
 packaging==24.1
     # via
     #   keras
+    #   lazy-loader
     #   pytest
+    #   scikit-image
     #   tensorboard
     #   tensorflow-intel
 pandas==2.2.2
     # via airbus-ship-detection (pyproject.toml)
+pillow==10.4.0
+    # via
+    #   imageio
+    #   scikit-image
 pluggy==1.5.0
     # via pytest
 protobuf==4.25.4
@@ -107,10 +122,14 @@ rich==13.7.1
     # via keras
 ruff==0.6.2
     # via airbus-ship-detection (pyproject.toml)
+scikit-image==0.24.0
+    # via airbus-ship-detection (pyproject.toml)
 scikit-learn==1.5.1
     # via airbus-ship-detection (pyproject.toml)
 scipy==1.14.1
-    # via scikit-learn
+    # via
+    #   scikit-image
+    #   scikit-learn
 six==1.16.0
     # via
     #   astunparse
@@ -132,6 +151,8 @@ tensorflow==2.17.0
     # via tensorflow-intel
 threadpoolctl==3.5.0
     # via scikit-learn
+tifffile==2024.8.10
+    # via scikit-image
 typing-extensions==4.12.2
     # via
     #   mypy
