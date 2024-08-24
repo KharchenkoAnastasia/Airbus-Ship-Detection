@@ -134,3 +134,8 @@ wrapt==1.16.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+
+pytest~=8.3.2
+matplotlib~=3.9.2
+scikit-image~=0.24.0
+pillow~=10.4.0
