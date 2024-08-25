@@ -4,7 +4,7 @@ from typing import Generator, Iterable, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from skimage.io import imread
+from PIL import Image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from airbus_ship_detection.data_exploration import masks_as_image
@@ -61,7 +61,7 @@ def keras_generator(
         np.random.shuffle(all_batches)
         for c_img_id, c_masks in all_batches:
             rgb_path = image_dataset_path / c_img_id
-            c_img: npt.NDArray[np.uint8] = imread(rgb_path)  # type: ignore
+            c_img = np.array(Image.open(rgb_path))
             c_mask = masks_as_image(c_masks["EncodedPixels"].values)
 
             if IMG_SCALING is not None:
