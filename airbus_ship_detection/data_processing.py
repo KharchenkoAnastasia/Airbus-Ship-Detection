@@ -61,7 +61,7 @@ def keras_generator(
         np.random.shuffle(all_batches)
         for c_img_id, c_masks in all_batches:
             rgb_path = image_dataset_path / c_img_id
-            c_img = imread(rgb_path)
+            c_img: npt.NDArray[np.uint8] = imread(rgb_path)  # type: ignore
             c_mask = masks_as_image(c_masks["EncodedPixels"].values)
 
             if IMG_SCALING is not None:
@@ -72,7 +72,7 @@ def keras_generator(
             out_mask.append(c_mask)
 
             if len(out_rgb) >= batch_size:
-                yield np.stack(out_rgb, 0) / 255.0, np.stack(out_mask, 0).astype(float)
+                yield np.stack(out_rgb, 0).astype(np.uint8), np.stack(out_mask, 0).astype(np.uint8)
                 out_rgb, out_mask = [], []
 
 
