@@ -15,12 +15,12 @@ authors = [
 ]
 readme = "README.md"
 dependencies = [
-    "onetoonemap",
     "requests",
     "numpy",
     "pandas",
     "scikit-learn",
     "tensorflow",
+    "matplotlib"
     ]
 
 [project.optional-dependencies]
@@ -46,8 +46,7 @@ module = [
   "sklearn.*",
   "inflect.*",
   "transformers.*",
-  "pattern.text.en.*",
-  "nltk.*"
+  "pattern.text.en.*"
 ]
 
 [tool.ruff]
