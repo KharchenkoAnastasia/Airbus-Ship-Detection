@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -50,16 +49,14 @@ def rle_decode(mask_rle: str, shape: tuple[int, int] = (768, 768)) -> npt.NDArra
     mask_rle_split = mask_rle.split()
     mask_starts = [int(mask_rle_split[i]) - 1 for i in range(0, len(mask_rle_split), 2)]
     mask_lengths = [int(mask_rle_split[i + 1]) for i in range(0, len(mask_rle_split), 2)]
-    for start, length in zip(mask_starts, mask_lengths):
+    for start, length in zip(mask_starts, mask_lengths, strict=False):
         mask[start : start + length] = 1
 
     mask = mask.reshape(shape).T
     return mask
 
 
-def show_example_data(
-    ImageId: str, train_csv: pd.DataFrame, image_dataset: Union[str, Path]
-) -> None:
+def show_example_data(ImageId: str, train_csv: pd.DataFrame, image_dataset: str | Path) -> None:
     """
     Display an example of an image and its corresponding masks.
 
@@ -89,7 +86,7 @@ def show_example_data(
     plt.show()
 
 
-def masks_as_image(in_mask_list: List[str]) -> npt.NDArray[np.uint8]:
+def masks_as_image(in_mask_list: list[str]) -> npt.NDArray[np.uint8]:
     """
     Take the individual ship masks and create a single mask array for all ships
     """
