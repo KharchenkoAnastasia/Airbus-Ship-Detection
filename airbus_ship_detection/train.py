@@ -10,8 +10,9 @@ from airbus_ship_detection.data_exploration import (
 from airbus_ship_detection.data_processing import balance_data
 from airbus_ship_detection.model import UNet
 
-TRAIN_V2 = Path(r"D:\Images_Airbus_Ship_Detection\train_v2")
-SEGMENTATION = Path(r"D:\Images_Airbus_Ship_Detection\train_ship_segmentations_v2.csv")
+ROOT_DIR = Path(__file__).parent.parent
+TRAIN_V2 = ROOT_DIR / "data" / "train_v2"
+SEGMENTATION = ROOT_DIR / "data" / "train_ship_segmentations_v2.csv"
 
 
 def main() -> None:
