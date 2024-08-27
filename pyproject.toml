@@ -8,7 +8,7 @@ packages = ["airbus_ship_detection"]
 [project]
 name = "airbus-ship-detection"
 version = "0.1.0"
-requires-python = ">= 3.9"
+requires-python = ">=3.11"
 description = ""
 authors = [
     { name = "KharchenkoAnastasia", email = "kharchenko.13.08@gmail.com" },
@@ -44,9 +44,6 @@ ignore_missing_imports = true
 module = [
   "scipy.*",
   "sklearn.*",
-  "inflect.*",
-  "transformers.*",
-  "pattern.text.en.*"
 ]
 
 [tool.ruff]
@@ -57,5 +54,12 @@ convention = "google"
 
 [tool.ruff.lint]
 select = [
-    "I"          # isort
+    "I",         # isort
+    "SIM",
+    "UP",
+    "PL",
+    "RUF",
+    "B",
+    "E",
+    "F"
 ]
