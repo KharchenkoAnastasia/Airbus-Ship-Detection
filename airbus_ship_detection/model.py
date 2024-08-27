@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -82,9 +81,9 @@ class UNet:
     def fit_model(
         self,
         train_csv: pd.DataFrame,
-        train_images: Union[str, Path],
+        train_images: str | Path,
         valid_csv: pd.DataFrame,
-        valid_images: Union[str, Path],
+        valid_images: str | Path,
         epochs: int,
     ) -> None:
         """

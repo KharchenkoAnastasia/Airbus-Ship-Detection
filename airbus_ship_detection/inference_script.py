@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 import tensorflow as tf
@@ -13,7 +12,7 @@ model_path = Path("../model") / "unet_model.h5"
 unet_model = tf.keras.models.load_model(model_path, custom_objects={"loss": loss})
 
 
-def main(directory: Union[str, Path]) -> None:
+def main(directory: str | Path) -> None:
     print(f"Processing directory: {directory}")
     directory = Path(directory)
 
@@ -38,10 +37,10 @@ def main(directory: Union[str, Path]) -> None:
         print(f"Saved mask segmentation for {image_file.name}")
 
 
+ARGUMENT_COUNT = 2
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != ARGUMENT_COUNT:
         print("Usage: python inference_script.py <directory_path>")
         sys.exit(1)
-
     directory_path = sys.argv[1]
     main(directory_path)

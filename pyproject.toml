@@ -63,3 +63,6 @@ select = [
     "E",
     "F"
 ]
+ignore = [
+    "PLR0913"
+]
