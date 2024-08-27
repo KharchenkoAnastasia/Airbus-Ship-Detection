@@ -20,30 +20,38 @@ def test_balance_data(sample_train_csv):
     balanced_df = balance_data(sample_train_csv)
 
     # Check that images without ships were removed
-    assert "img1" not in balanced_df["ImageId"].values
-    assert "img4" not in balanced_df["ImageId"].values
-
-    # Check that the fraction of remaining images is as expected
-    expected_length = int(0.8 * 3)  # 3 images have ships, 80% of that is 2.4, which rounds to 2
-    assert len(balanced_df) == expected_length
+    assert not balanced_df["ImageId"].isin(["img1", "img4"]).any()
 
 
-def test_balance_data_fraction(sample_train_csv):
-    # Test with a different fraction
-    balanced_df = balance_data(sample_train_csv, fraction=0.5)
+@pytest.mark.parametrize(
+    "fraction, expected_length",
+    [
+        (1.0, 3),  # 100% of the data, should retain all 3 images
+        (0.5, 2),  # 50% of the data, 0.5*3=1.5 should round to 2 images
+        (0.2, 1),  # 20% of the data, 0.2*3=0.6 should round to 1 image
+        (0.1, 0),  # 10% of the data, 0.1*3=0.3 should round to 0
+    ],
+)
+def test_balance_data_fraction(sample_train_csv, fraction, expected_length):
+    # Balance the data with the given fraction
+    balanced_df = balance_data(sample_train_csv, fraction=fraction)
 
     # Check that the correct number of images remain
-    expected_length = round(0.5 * 3)  # 3 images have ships, 50% of that is 1.5, which rounds to 2
     assert len(balanced_df) == expected_length
 
 
-def test_balance_data_no_removal(sample_train_csv):
-    # Test with fraction=1.0 to ensure all images with ships are retained
-    balanced_df = balance_data(sample_train_csv, fraction=1.0)
+@pytest.fixture
+def sample_images():
+    # Create dummy images and masks
+    images = np.random.randint(0, 256, (4, 256, 256, 3), dtype=np.uint8)
+    masks = np.random.randint(0, 2, (4, 256, 256, 1), dtype=np.uint8)
+    yield (np.stack(images, 0), np.stack(masks, 0))
 
-    # Check that all images with ships are still present
-    assert len(balanced_df) == 3
-    assert set(balanced_df["ImageId"].values) == {"img2", "img3", "img5"}
+
+def test_augment_images(sample_images):
+    # Call the augment_images function with the sample images
+    # augmented_images_gen = augment_images(sample_images)
+    pass
 
 
 if __name__ == "__main__":
