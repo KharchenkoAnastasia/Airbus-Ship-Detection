@@ -1,5 +1,5 @@
+from collections.abc import Generator, Iterable
 from pathlib import Path
-from typing import Generator, Iterable, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -12,7 +12,8 @@ from airbus_ship_detection.data_exploration import masks_as_image
 
 def balance_data(train_csv: pd.DataFrame, fraction: float = 0.8) -> pd.DataFrame:
     """
-    Balance the training data by removing images without ships and sampling a fraction of the remaining data.
+    Balance the training data by removing images without ships and
+    sampling a fraction of the remaining data.
 
     Args:
         train_csv (DataFrame): DataFrame containing the training data.
@@ -36,10 +37,11 @@ def balance_data(train_csv: pd.DataFrame, fraction: float = 0.8) -> pd.DataFrame
 
 
 def keras_generator(
-    gen_df: pd.DataFrame, image_dataset: Union[str, Path], batch_size: int = 8
-) -> Generator[Tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]], None, None]:
+    gen_df: pd.DataFrame, image_dataset: str | Path, batch_size: int = 8
+) -> Generator[tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]], None, None]:
     """
-    Generate batches of RGB images and corresponding masks from the input DataFrame.
+    Generate batches of RGB images and corresponding masks
+    from the input DataFrame.
 
     Args:
         gen_df (pd.DataFrame): DataFrame containing image and mask information.
@@ -47,7 +49,8 @@ def keras_generator(
         batch_size (int): Number of samples per batch. Default is 8.
 
     Yields:
-        Tuple[np.ndarray, np.ndarray]: A tuple containing the batch of RGB images and corresponding masks.
+        Tuple[np.ndarray, np.ndarray]: A tuple containing the batch
+        of RGB images and corresponding masks.
               The RGB images are normalized to the range [0, 1], and masks are not normalized.
     """
     IMG_SCALING = (3, 3)
@@ -77,17 +80,19 @@ def keras_generator(
 
 
 def augment_images(
-    images: Iterable[Tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]],
-) -> Generator[Tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]], None, None]:
+    images: Iterable[tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]],
+) -> Generator[tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]], None, None]:
     """
     Generate augmented images and masks using image data augmentation.
 
     Args:
-        images (Iterable[Tuple[np.ndarray, np.ndarray]]): Iterable containing pairs of original images and masks.
+        images (Iterable[Tuple[np.ndarray, np.ndarray]]): Iterable containing pairs of
+        original images and masks.
 
     Yields:
         Tuple[np.ndarray, np.ndarray]: A tuple containing the augmented images and masks.
     """
+    seed = 42
     # Define the augmentation settings
     aug_args = dict(
         rotation_range=45,
@@ -111,7 +116,11 @@ def augment_images(
 
     # Generate augmented images and masks
     for image, mask in images:
-        augmented_images = image_datagen.flow(255 * image, batch_size=image.shape[0], shuffle=True)
-        augmented_masks = mask_datagen.flow(mask, batch_size=image.shape[0], shuffle=True)
+        augmented_images = image_datagen.flow(
+            255 * image, batch_size=image.shape[0], shuffle=True, seed=seed
+        )
+        augmented_masks = mask_datagen.flow(
+            mask, batch_size=image.shape[0], shuffle=True, seed=seed
+        )
 
         yield next(augmented_images) / 255.0, next(augmented_masks)
