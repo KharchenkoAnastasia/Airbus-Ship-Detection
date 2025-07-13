@@ -14,6 +14,7 @@ def dice_coeff(target: tf.Tensor, pred: tf.Tensor) -> tf.Tensor:
     Returns:
         tf.Tensor: Dice coefficient, a measure of similarity between target and prediction.
     """
+    target = tf.cast(target, dtype=tf.float32)
     smooth = 1.0
     intersection = K.sum(target * pred, axis=[1, 2, 3])
     union = K.sum(target, axis=[1, 2, 3]) + K.sum(pred, axis=[1, 2, 3])

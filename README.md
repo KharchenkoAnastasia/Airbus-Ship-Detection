@@ -5,14 +5,44 @@
 These notebooks detail my solution to Kaggle's Airbus Ship Detection challenge.
 
 The goal of the competition is to analyze satellite images of container ships and produce segmentation masks of the ships.
-
-- **unet_model.h5** - binary file that stores model
-- **train.py** - python file that prepare, train and save model
-- **loss.py** -python file that implements the loss function used to train the segmentation model
-- **inference_script.py** - python file that takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder
-- **requarements.txt** - file  that prepares the environment
-- **train.ipynb,test.ipynb** - created to Colaboratory
-
+### **Project Structure**
+```
+airbus_ship_detection/
+│
+├── .github/ # GitHub-specific files
+│ └── workflows/
+│ └── ci.yml # Continuous Integration (CI) workflow
+│
+├── .venv/ # Virtual environment (excluded from version control)
+│
+├── airbus_ship_detection/ # Main source code package
+│ ├── utils/
+│ │ ├── init.py # Marks utils as a Python module
+│ │ ├── data_exploration.py # EDA and visualization utilities
+│ │ ├── data_processing.py # Data preprocessing and augmentation
+│ │ ├── inference_script.py # Inference logic using trained model
+│ │ ├── model.py # U-Net model architecture definition
+│ │ └── train.py # Training script and loops
+│
+├── airbus_ship_detection.egg-info/ # Metadata for installed package (auto-generated)
+│
+├── data/ # Dataset directory
+│ └── train_v2/
+│ └── train_ship_segmentations_v2.csv # Segmentation label CSV file
+│
+├── model/ # Folder to save trained models
+│
+├── notebooks/ # Jupyter Notebooks for EDA, experiments
+│
+├── tests/ # Unit and integration test suite
+│
+├── .gitignore # Specifies files/folders to ignore in Git
+├── .pre-commit-config.yaml # Pre-commit hook configurations
+├── pyproject.toml # Project configuration and dependencies
+├── requirements.txt # Production dependencies
+├── requirements_test.txt # Testing and development dependencies
+├── README.md # Project documentation (you are here)
+```
 
 
 ### **Prerequisites**
@@ -45,7 +75,7 @@ cd Airbus-Ship-Detection
 3. Install the required dependencies:
 
 ```bash
-pip install -r requirements.txt 
+pip install -r requirements.txt
 ```
 
 
@@ -55,7 +85,7 @@ The inference_script.py takes one CLI argument that is path to directory with im
 
 1. Open a terminal or command prompt on your computer.
 2. Navigate to the directory where the "inference_script.py" file. Make sure that the files inference_script.py, loss.py, unet_model.h5 were in the same directory.
-3. Replace <directory_path> in the command with the actual path to the directory containing your image samples. 
+3. Replace <directory_path> in the command with the actual path to the directory containing your image samples.
 
 ```bash
 python inference_script.py <directory_path>
@@ -107,7 +137,7 @@ Ensure that the training dataset is properly configured and accessible within th
 
 
 
-The sample_submission_v2.csv file contained an “ImageId” column and an “EncodedPixels” column where the “ImageId” contains image file names and the “EncodedPixels” column contain RLE encoded masks (me target model outputs). The decoded masks contain 0’s for the pixel positions in the corresponding image that are not part of a ship and contain 1’s for pixel positions that are part of a ship. Also, each row either represents no ship or 1 ship, so there can be multiple rows with the same image ID. For the image IDs that contain no ships, the encoded pixels value is n/a. 
+The sample_submission_v2.csv file contained an “ImageId” column and an “EncodedPixels” column where the “ImageId” contains image file names and the “EncodedPixels” column contain RLE encoded masks (me target model outputs). The decoded masks contain 0’s for the pixel positions in the corresponding image that are not part of a ship and contain 1’s for pixel positions that are part of a ship. Also, each row either represents no ship or 1 ship, so there can be multiple rows with the same image ID. For the image IDs that contain no ships, the encoded pixels value is n/a.
 
 RLE decoding: The segmentation masks for the training images were encoded by RLE (run-length encoding) for the purpose of reducing file size. To feed the masks into segmentation models, we need to decode the masks. I used the decoding def rle_decode(mask_rle, shape=(768, 768)) function.
 Example data
@@ -130,7 +160,7 @@ Below is an image of the histogram for the down sampled distribution.
 
 #### **Design the Model**
 
- 
+
 The U-Net model is a popular architecture commonly used for image segmentation tasks, including ship detection. It is named after its U-shaped architecture.
 The model consists of a contracting path (encoder) and an expanding path (decoder). The contracting path captures the context and reduces the spatial dimensions of the input image, while the expanding path recovers the spatial information and generates the segmentation mask.
 
@@ -149,7 +179,7 @@ The model is constructed:
 6. Each upsampling step is followed by a pair of convolutional layers to refine the feature maps.
 
 7. Finally, a 1x1 convolutional layer with a sigmoid activation function is used to produce the final segmentation mask.
-   
+
 
 
 
@@ -172,7 +202,3 @@ The Adam optimizer and Dice coefficient were used during model training. The bin
 #### **Visualize predictions**
 
 ![image](https://user-images.githubusercontent.com/47922202/185146257-acd22268-652e-4df3-beb0-72a96e5cb2ba.png)
-
-
-
-

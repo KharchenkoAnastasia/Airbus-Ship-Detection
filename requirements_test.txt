@@ -141,7 +141,7 @@ tensorboard-data-server==0.7.2
     # via tensorboard
 tensorflow==2.17.0
     # via airbus-ship-detection (pyproject.toml)
-#tensorflow-intel==2.17.0
+tensorflow-intel==2.17.0
     # via tensorflow
 tensorflow-io-gcs-filesystem==0.31.0
     # via tensorflow-intel

@@ -6,8 +6,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import Concatenate, Conv2D, Input, MaxPooling2D, UpSampling2D
 from tensorflow.keras.models import Model
 
-from airbus_ship_detection.data_processing import augment_images, keras_generator
-from airbus_ship_detection.utils.loss import loss
+from airbus_ship_detection.data_processing import keras_generator
+from airbus_ship_detection.utils.loss import dice_coeff, loss
 
 
 class UNet:
@@ -76,7 +76,7 @@ class UNet:
             epsilon=None,
             amsgrad=False,
         )
-        self.unet_model.compile(optimizer="adam", loss=loss, metrics=["binary_accuracy"])
+        self.unet_model.compile(optimizer="adam", loss=loss, metrics=["accuracy", dice_coeff])
 
     def fit_model(
         self,
@@ -93,7 +93,8 @@ class UNet:
         self.steps_per_epoch = 100
         self.validation_steps = 50
         self.history = self.unet_model.fit(
-            augment_images(keras_generator(train_csv, train_images, self.batch_size)),
+            # augment_images(keras_generator(train_csv, train_images, self.batch_size)),
+            keras_generator(train_csv, train_images, self.batch_size),
             steps_per_epoch=self.steps_per_epoch,
             epochs=epochs,
             validation_data=keras_generator(valid_csv, valid_images),
@@ -114,8 +115,8 @@ class UNet:
         plt.show()
 
         plt.figure()
-        plt.plot(self.history.history["binary_accuracy"], label="train")
-        plt.plot(self.history.history["val_binary_accuracy"], label="test")
+        plt.plot(self.history.history["dice_coeff"], label="train")
+        plt.plot(self.history.history["val_dice_coeff"], label="test")
         plt.title("binary_accuracy")
         plt.ylabel("binary_accuracy")
         plt.xlabel("epoch")
