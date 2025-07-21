@@ -13,8 +13,6 @@ airbus_ship_detection/
 │ └── workflows/
 │ └── ci.yml # Continuous Integration (CI) workflow
 │
-├── .venv/ # Virtual environment (excluded from version control)
-│
 ├── airbus_ship_detection/ # Main source code package
 │ ├── utils/
 │ │ ├── init.py # Marks utils as a Python module
