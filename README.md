@@ -8,7 +8,7 @@ Developed a U-Net based deep learning model to perform binary segmentation of sh
 
 The goal of this project is to build a semantic segmentation model that can detect the presence and location of ships in satellite images. This task is framed as a **binary segmentation problem**—each pixel in the image is classified as either ship (1) or background (0).
 
--
+
 
 ### **Project Structure**
 ```
