@@ -8,6 +8,17 @@ Developed a U-Net based deep learning model to perform binary segmentation of sh
 
 The goal of this project is to build a semantic segmentation model that can detect the presence and location of ships in satellite images. This task is framed as a **binary segmentation problem**—each pixel in the image is classified as either ship (1) or background (0).
 
+## 📂 Dataset Overview
+
+The dataset was obtained from the official Kaggle [Airbus Ship Detection Challenge](https://www.kaggle.com/c/airbus-ship-detection/data).
+
+### Primary Files Used in This Project
+
+| File/Folder                  | Description |
+|-----------------------------|-------------|
+| `train_v2/`                 | Directory containing ~40,000 training images in `.jpg` format. Each image has a resolution of **768×768 pixels** and may contain one or more ships—or none. |
+| `train_ship_segmentations.csv` | A CSV file containing the ship segmentation labels using **Run-Length Encoding (RLE)**. Each row represents one ship in an image. Images with multiple ships have multiple rows. Empty `EncodedPixels` fields indicate no ship present. |
+
 
 
 ### **Project Structure**
