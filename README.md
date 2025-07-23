@@ -22,8 +22,6 @@ airbus_ship_detection/
 │ │ ├── model.py # U-Net model architecture definition
 │ │ └── train.py # Training script and loops
 │
-├── airbus_ship_detection.egg-info/ # Metadata for installed package (auto-generated)
-│
 ├── data/ # Dataset directory
 │ └── train_v2/
 │ └── train_ship_segmentations_v2.csv # Segmentation label CSV file
