@@ -1,12 +1,10 @@
 # 🚢 Airbus Ship Detection Challenge
 
-Developed a U-Net based deep learning model to perform binary segmentation of ships in satellite images as part of the Kaggle [Airbus Ship Detection Challenge](https://www.kaggle.com/c/airbus-ship-detection/overview).
 
+## 🚀 Project Overview
+This project is part of the Airbus Ship Detection Challenge on Kaggle [Airbus Ship Detection Challenge](https://www.kaggle.com/c/airbus-ship-detection/overview) , where the objective is to detect ships in satellite images using semantic segmentation.
 
-
-## 📌 Project Goal
-
-The goal of this project is to build a semantic segmentation model that can detect the presence and location of ships in satellite images. This task is framed as a **binary segmentation problem**—each pixel in the image is classified as either ship (1) or background (0).
+A U-Net based deep learning model was developed to perform binary segmentation, classifying each pixel as either ship (1) or background (0). The model generates prediction masks for test images using a pre-trained network. These masks are post-processed into rectangular regions, and final results are saved in CSV format for evaluation and submission.
 
 ## 📂 Dataset Overview
 
@@ -17,7 +15,7 @@ The dataset was obtained from the official Kaggle [Airbus Ship Detection Challen
 | File/Folder                  | Description |
 |-----------------------------|-------------|
 | `train_v2/`                 | Directory containing ~40,000 training images in `.jpg` format. Each image has a resolution of **768×768 pixels** and may contain one or more ships—or none. |
-| `train_ship_segmentations.csv` | A CSV file containing the ship segmentation labels using **Run-Length Encoding (RLE)**. Each row represents one ship in an image. Images with multiple ships have multiple rows. Empty `EncodedPixels` fields indicate no ship present. |
+| `train_ship_segmentations.csv` | A CSV file containing the ship segmentation labels using **Run-Length Encoding (RLE)**. Each row represents one ship in an image. Images with multiple ships have multiple rows.  |
 
 
 
@@ -121,14 +119,6 @@ python train.py
 
 Ensure that the training dataset is properly configured and accessible within the script. You may need to adjust the script parameters, such as the number of epochs or batch size, to suit your specific requirements.
 
-#### **Dataset**
-
-
-
-- train_ship_segmentations_v2.csv: This file contains the RLE (Run Length Encoded is a way to encode image pixels in a more summerized way, especially when images have a black or white background) masks of ships in each image. If there are no ships, the EncodedPixel column is blank.
-- train_v2: v2 contains the combined Train and Test images of the original dataset.
-- test_v2: A folder with test images, size 768x768 px.
-- sample_submission_v2csv: a file containing all the ImageId for the predictions of ships on those images.
 
 
 
