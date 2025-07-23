@@ -19,7 +19,7 @@ The dataset was obtained from the official Kaggle [Airbus Ship Detection Challen
 
 
 
-### **Project Structure**
+## 🗂️ Project Structure
 ```
 airbus_ship_detection/
 │
