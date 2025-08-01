@@ -1,46 +1,127 @@
-import sys
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from PIL import Image
 
-from airbus_ship_detection.utils.loss import loss
-
-# Load the saved model
-model_path = Path("../model") / "unet_model.h5"
-unet_model = tf.keras.models.load_model(model_path, custom_objects={"loss": loss})
+from airbus_ship_detection.utils.loss import dice_coeff, loss
 
 
-def main(directory: str | Path) -> None:
-    print(f"Processing directory: {directory}")
-    directory = Path(directory)
+def mask_to_rle(mask: np.ndarray) -> str:
+    """
+    Convert a binary mask to Run-Length Encoding (RLE) format.
 
-    # Create the "image_mask" folder if it doesn't exist
-    mask_folder = directory / "image_mask"
-    mask_folder.mkdir(parents=True, exist_ok=True)
+    Args:
+        mask (np.ndarray): Binary mask of shape (height, width) with values 0 or 1.
 
-    # Find all image files in the directory
-    image_files = [f for f in directory.iterdir() if f.suffix.lower() in {".png", ".jpg", ".jpeg"}]
-
-    # Perform segmentation and save the results
-    for image_file in image_files:
-        image = Image.open(image_file).resize((256, 256))
-        image_array = np.expand_dims(np.array(image), 0) / 255.0
-        segmentation = unet_model.predict(image_array)
-
-        # Save the mask segmentation image
-        mask_image = (segmentation[0, :, :, 0] * 255).astype(np.uint8)
-        save_path = mask_folder / f"{image_file.stem}_mask.png"
-        pil_image = Image.fromarray(mask_image)
-        pil_image.save(save_path)
-        print(f"Saved mask segmentation for {image_file.name}")
+    Returns:
+        str: RLE string (e.g., "1 3 10 5") or empty string if no ships detected.
+    """
+    pixels = mask.flatten(order="F")  # Flatten in column-major order
+    pixels = np.concatenate([[0], pixels, [0]])
+    runs = np.where(pixels[1:] != pixels[:-1])[0] + 1
+    runs[1::2] -= runs[::2]
+    return " ".join(str(x) for x in runs) if np.any(mask) else ""
 
 
-ARGUMENT_COUNT = 2
+def load_and_preprocess_image(image_path: Path) -> np.ndarray:
+    """
+    Load and preprocess an image for model prediction.
+
+    Args:
+        image_path (Path): Path to the image file.
+
+    Returns:
+        np.ndarray: Downscaled image array of shape (256, 256, 3).
+
+    Raises:
+        ValueError: If the image does not have the expected shape (768, 768, 3).
+    """
+    img = Image.open(image_path).convert("RGB")
+    img_array = np.array(img)
+    if img_array.shape != (768, 768, 3):
+        raise ValueError(f"Image {image_path.name} has unexpected shape {img_array.shape}")
+    # Downscale from (768, 768, 3) to (256, 256, 3)
+    img_downscaled = img_array[::3, ::3, :]
+    return img_downscaled.astype(np.uint8)
+
+
+def predict_mask(model: tf.keras.Model, image: np.ndarray, threshold: float = 0.5) -> np.ndarray:
+    """
+    Predict a segmentation mask using the pre-trained model.
+
+    Args:
+        model (tf.keras.Model): Loaded U-Net model.
+        image (np.ndarray): Preprocessed image of shape (256, 256, 3).
+        threshold (float): Threshold for binarizing the prediction. Default is 0.5.
+
+    Returns:
+        np.ndarray: Binary mask of shape (256, 256).
+    """
+    pred = model.predict(image[None, ...])[0, ..., 0]
+    return (pred > threshold).astype(np.uint8)
+
+
+def upsample_mask(mask: np.ndarray, target_size: tuple[int, int] = (768, 768)) -> np.ndarray:
+    """
+    Upsample a binary mask to the target size.
+
+    Args:
+        mask (np.ndarray): Binary mask of shape (256, 256).
+        target_size (tuple[int, int]): Desired output size, default (768, 768).
+
+    Returns:
+        np.ndarray: Upsampled mask of shape target_size.
+    """
+    upsampled = tf.image.resize(mask[..., None], target_size, method="nearest")
+    return tf.cast(upsampled, tf.uint8).numpy()[..., 0]
+
+
+def generate_submission():
+    """
+    Generate a submission CSV file for ship detection using a pre-trained U-Net model.
+    """
+    # Define paths
+    root_dir = Path(__file__).resolve().parent.parent
+    test_dir = root_dir / "data" / "test_images"
+    model_path = root_dir / "model" / "unet_model.h5"
+
+    # Load the pre-trained model
+    model = tf.keras.models.load_model(
+        model_path, custom_objects={"loss": loss, "dice_coeff": dice_coeff}
+    )
+
+    # Get test image paths
+    test_images = list(test_dir.iterdir())
+    results = []
+
+    # Process each image
+    for image_path in test_images:
+        try:
+            # Load and preprocess
+            img_downscaled = load_and_preprocess_image(image_path)
+
+            # Predict mask
+            binary_mask = predict_mask(model, img_downscaled)
+
+            # Upsample mask
+            upsampled_mask = upsample_mask(binary_mask)
+
+            # Convert to RLE
+            rle = mask_to_rle(upsampled_mask)
+
+            # Store result
+            results.append({"ImageId": image_path.name, "EncodedPixels": rle})
+        except Exception as e:
+            print(f"Error processing {image_path.name}: {e}")
+
+    # Save results to CSV
+    submission_df = pd.DataFrame(results, columns=["ImageId", "EncodedPixels"])
+    submission_path = test_dir / "submission.csv"
+    submission_df.to_csv(submission_path, index=False)
+    print(f"Submission saved to {submission_path}")
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != ARGUMENT_COUNT:
-        print("Usage: python inference_script.py <directory_path>")
-        sys.exit(1)
-    directory_path = sys.argv[1]
-    main(directory_path)
+    generate_submission()
