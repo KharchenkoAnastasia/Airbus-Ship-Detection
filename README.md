@@ -28,13 +28,15 @@ airbus_ship_detection/
 │ └── ci.yml # Continuous Integration (CI) workflow
 │
 ├── airbus_ship_detection/ # Main source code package
+│ ├── init.py # Marks utils as a Python module
 │ ├── utils/
-│ │ ├── init.py # Marks utils as a Python module
-│ │ ├── data_exploration.py # EDA and visualization utilities
-│ │ ├── data_processing.py # Data preprocessing and augmentation
-│ │ ├── inference_script.py # Inference logic using trained model
-│ │ ├── model.py # U-Net model architecture definition
-│ │ └── train.py # Training script and loops
+│       ├── __init__.py
+│ 	├── loss.py
+│ ├── data_exploration.py # EDA and visualization utilities
+│ ├── data_processing.py # Data preprocessing and augmentation
+│ ├── inference_script.py # Inference logic using trained model
+│ ├── model.py # U-Net model architecture definition
+│ └── train.py # Training script and loops
 │
 ├── data/ # Dataset directory
 │ └── train_v2/
