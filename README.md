@@ -30,8 +30,8 @@ airbus_ship_detection/
 ├── airbus_ship_detection/ # Main source code package
 │ ├── init.py # Marks utils as a Python module
 │ ├── utils/
-│       ├── __init__.py
-│ 	├── loss.py
+│    ├── __init__.py
+│    ├── loss.py
 │ ├── data_exploration.py # EDA and visualization utilities
 │ ├── data_processing.py # Data preprocessing and augmentation
 │ ├── inference_script.py # Inference logic using trained model
