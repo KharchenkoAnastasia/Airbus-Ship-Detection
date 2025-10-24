@@ -38,6 +38,7 @@ airbus_ship_detection/
 │
 ├── data/ # Dataset directory
 │ └── train_v2/
+│ └── test_images/
 │ └── train_ship_segmentations_v2.csv # Segmentation label CSV file
 │
 ├── model/ # Folder to save trained models
