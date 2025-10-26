@@ -1,14 +1,14 @@
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 import tensorflow as tf
 from PIL import Image
+from utils.loss import dice_coeff, loss
 
-from airbus_ship_detection.utils.loss import dice_coeff, loss
 
-
-def mask_to_rle(mask: np.ndarray) -> str:
+def mask_to_rle(mask: npt.NDArray[np.uint8]) -> str:
     """
     Convert a binary mask to Run-Length Encoding (RLE) format.
 
@@ -25,7 +25,7 @@ def mask_to_rle(mask: np.ndarray) -> str:
     return " ".join(str(x) for x in runs) if np.any(mask) else ""
 
 
-def load_and_preprocess_image(image_path: Path) -> np.ndarray:
+def load_and_preprocess_image(image_path: Path) -> npt.NDArray[np.uint8]:
     """
     Load and preprocess an image for model prediction.
 
@@ -47,7 +47,11 @@ def load_and_preprocess_image(image_path: Path) -> np.ndarray:
     return img_downscaled.astype(np.uint8)
 
 
-def predict_mask(model: tf.keras.Model, image: np.ndarray, threshold: float = 0.5) -> np.ndarray:
+def predict_mask(
+    model: tf.keras.Model,
+    image: npt.NDArray[np.uint8],
+    threshold: float = 0.5,
+) -> npt.NDArray[np.uint8]:
     """
     Predict a segmentation mask using the pre-trained model.
 
@@ -59,7 +63,19 @@ def predict_mask(model: tf.keras.Model, image: np.ndarray, threshold: float = 0.
     Returns:
         np.ndarray: Binary mask of shape (256, 256).
     """
-    pred = model.predict(image[None, ...])[0, ..., 0]
+    # pred = model.predict(image[None, ...])[0, ..., 0]
+    # Normalize image to [0, 1]
+    image_normalized = image.astype(np.float32) / 255.0
+
+    # Add batch dimension → (1, 256, 256, 3)
+    input_tensor = np.expand_dims(image_normalized, axis=0)
+
+    # Model prediction
+    prediction = model.predict(input_tensor)
+
+    # Remove batch dimension → (256, 256, 1)
+    pred = np.squeeze(prediction, axis=0)
+
     return (pred > threshold).astype(np.uint8)
 
 

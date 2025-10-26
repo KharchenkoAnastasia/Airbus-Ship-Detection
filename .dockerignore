@@ -1,0 +1,15 @@
+# keep image lean — we’ll mount these at runtime
+data/train_v2
+
+# typical noise
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.DS_Store
+.git/
+.github/
+notebooks/
+tests/
+*.ipynb_checkpoints/
