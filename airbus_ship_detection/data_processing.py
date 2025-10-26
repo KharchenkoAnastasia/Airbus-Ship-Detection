@@ -4,10 +4,9 @@ from pathlib import Path
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+from data_exploration import masks_as_image
 from PIL import Image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-from airbus_ship_detection.data_exploration import masks_as_image
 
 
 def balance_data(train_csv: pd.DataFrame, fraction: float = 0.8) -> pd.DataFrame:

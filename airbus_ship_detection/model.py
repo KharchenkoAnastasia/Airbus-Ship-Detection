@@ -3,11 +3,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
+from data_processing import keras_generator
 from tensorflow.keras.layers import Concatenate, Conv2D, Input, MaxPooling2D, UpSampling2D
 from tensorflow.keras.models import Model
-
-from airbus_ship_detection.data_processing import keras_generator
-from airbus_ship_detection.utils.loss import dice_coeff, loss
+from utils.loss import dice_coeff, loss
 
 
 class UNet:
@@ -117,8 +116,8 @@ class UNet:
         plt.figure()
         plt.plot(self.history.history["dice_coeff"], label="train")
         plt.plot(self.history.history["val_dice_coeff"], label="test")
-        plt.title("binary_accuracy")
-        plt.ylabel("binary_accuracy")
+        plt.title("dice_coeff")
+        plt.ylabel("dice_coeff")
         plt.xlabel("epoch")
         plt.legend()
         plt.show()

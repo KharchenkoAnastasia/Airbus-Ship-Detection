@@ -68,6 +68,27 @@ airbus_ship_detection/
 - Pandas
 - PIL (Python Imaging Library)
 
+### 🔄 Inference / Submission Generation
+
+The script `inference_script.py` loads a trained U-Net model (`model/unet_model.h5`), runs segmentation on all test images in `data/test_images/`, converts predictions to Run-Length Encoding (RLE), and writes the result to `submission.csv`.
+
+### 📂 Input Requirements
+
+- **Model**: `model/unet_model.h5` — trained U-Net model
+- **Test Images Folder**: `data/test_images/` containing `.jpg` images (each 768×768×3)
+
+
+### 📊 Output
+
+The script generates a file:
+
+`data/test_images/submission.csv`
+
+With the columns:
+
+| ImageId       | EncodedPixels              |
+|---------------|----------------------------|
+| 00021ddc3.jpg | 1 3 10 5 200 7 ...
 
 
 ### **Installation**
@@ -84,29 +105,20 @@ git clone https://github.com/KharchenkoAnastasia/Airbus-Ship-Detection.git
 ```bash
 cd Airbus-Ship-Detection
 ```
-
-3. Install the required dependencies:
-
+3. Create and activate a virtual environment:
+```bash
+# On Windows:
+python -m venv venv
+venv\Scripts\activate
+```
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-
-
-### **Usage inference_script.py**
-
-The inference_script.py takes one CLI argument that is path to directory with image samples. The output is that the segmented masks are saved as separate image files in the "image_mask" folder in the user-specified directory.
-
-1. Open a terminal or command prompt on your computer.
-2. Navigate to the directory where the "inference_script.py" file. Make sure that the files inference_script.py, loss.py, unet_model.h5 were in the same directory.
-3. Replace <directory_path> in the command with the actual path to the directory containing your image samples.
+4. Run the inference script. Navigate to the directory where the "inference_script.py" file
 
 ```bash
-python inference_script.py <directory_path>
-```
-Example
-
-```bash
-D:\Airbus Ship Detection\Airbus Ship Detection\MY> python inference_script.py "D:/Airbus Ship Detection/Airbus Ship Detection/test_images"
+python inference_script.py
 ```
 
 ### **Usage train.py**
