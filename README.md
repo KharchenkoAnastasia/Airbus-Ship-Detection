@@ -135,7 +135,52 @@ python train.py
 Ensure that the training dataset is properly configured and accessible within the script. You may need to adjust the script parameters, such as the number of epochs or batch size, to suit your specific requirements.
 
 
+### 🐳 2. Run inside Docker
 
+You can also generate `submission.csv` in an isolated container without installing TensorFlow locally.
+
+### 2.1. Build the image
+
+From the project root (where the Dockerfile is):
+
+```bash
+docker build -t ship-detector .
+```
+
+This creates a Docker image called `ship-detector`.
+
+### 2.2. Run the container (simple case: data is already copied into the image)
+
+```bash
+docker run --rm ship-detector
+```
+
+**What happens:**
+* Container launches Python
+* Runs `python -m airbus_ship_detection.inference_script`
+* Writes `submission.csv` inside the container at `/app/data/test_images/submission.csv`
+
+You can verify by running an interactive shell after:
+
+```bash
+docker run --rm -it ship-detector bash
+ls data/test_images/
+```
+
+You should see `submission.csv`.
+
+### 2.3. Run the container with local data/model via bind mounts (recommended for large datasets)
+
+If you don't want to bake gigabytes of images into the Docker image, you can mount folders from your host machine into the container. That way the container reads your local `data/` and `model/`, and writes `submission.csv` back to your machine.
+
+From the project root on your host:
+
+```bash
+docker run --rm \
+  -v "%cd%/data:/app/data" \
+  -v "%cd%/model:/app/model" \
+  ship-detector
+```
 
 
 
