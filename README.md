@@ -91,7 +91,7 @@ With the columns:
 | 00021ddc3.jpg | 1 3 10 5 200 7 ...
 
 
-### **Installation**
+### ⚙️ **Installation**
 
 To set up the Airbus Ship Detection project on your local machine, follow these steps:
 
@@ -121,7 +121,7 @@ pip install -r requirements.txt
 python inference_script.py
 ```
 
-### **Usage train.py**
+### 🧠 **Usage train.py**
 The train.py prepares, trains, and saves the neural network model. It is responsible for designing the architecture and training the model using the dataset.
 
 1. Navigate to the directory where the "train.py" file. Make sure that the files train.py, loss.py were in the same directory.
