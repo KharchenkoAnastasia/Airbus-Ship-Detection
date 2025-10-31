@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -73,13 +74,19 @@ def predict_mask(
     # Model prediction
     prediction = model.predict(input_tensor)
 
+    # Explicitly cast for mypy type safety
+    prediction = cast(npt.NDArray[np.float32], prediction)
+
     # Remove batch dimension → (256, 256, 1)
     pred = np.squeeze(prediction, axis=0)
 
     return (pred > threshold).astype(np.uint8)
 
 
-def upsample_mask(mask: np.ndarray, target_size: tuple[int, int] = (768, 768)) -> np.ndarray:
+def upsample_mask(
+    mask: npt.NDArray[np.uint8],
+    target_size: tuple[int, int] = (768, 768),
+) -> npt.NDArray[np.uint8]:
     """
     Upsample a binary mask to the target size.
 
@@ -90,11 +97,20 @@ def upsample_mask(mask: np.ndarray, target_size: tuple[int, int] = (768, 768)) -
     Returns:
         np.ndarray: Upsampled mask of shape target_size.
     """
-    upsampled = tf.image.resize(mask[..., None], target_size, method="nearest")
-    return tf.cast(upsampled, tf.uint8).numpy()[..., 0]
+    # Add channel dimension: (256, 256) -> (256, 256, 1)
+    mask_3d = mask[..., None]
+
+    # Perform nearest-neighbor upsampling
+    upsampled = tf.image.resize(mask_3d, target_size, method="nearest")
+
+    # Convert tensor -> uint8 numpy array
+    result = tf.cast(upsampled, tf.uint8).numpy()[..., 0]
+
+    # Explicit cast for mypy type checking
+    return cast(npt.NDArray[np.uint8], result)
 
 
-def generate_submission():
+def generate_submission() -> None:
     """
     Generate a submission CSV file for ship detection using a pre-trained U-Net model.
     """
@@ -110,7 +126,7 @@ def generate_submission():
 
     # Get test image paths
     test_images = list(test_dir.iterdir())
-    results = []
+    results: list[dict[str, Any]] = []
 
     # Process each image
     for image_path in test_images:
