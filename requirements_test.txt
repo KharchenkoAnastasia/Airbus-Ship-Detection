@@ -63,7 +63,7 @@ ml-dtypes==0.4.0
     # via
     #   keras
     #   tensorflow-intel
-mypy==1.11.2
+mypy==1.18.2
     # via airbus-ship-detection (pyproject.toml)
 mypy-extensions==1.0.0
     # via mypy
@@ -96,6 +96,8 @@ packaging==24.1
     #   tensorflow-intel
 pandas==2.2.2
     # via airbus-ship-detection (pyproject.toml)
+pathspec==0.12.1
+    # via mypy
 pillow==10.4.0
     # via matplotlib
 pluggy==1.5.0

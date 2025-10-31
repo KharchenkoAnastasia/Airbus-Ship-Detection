@@ -27,7 +27,7 @@ dependencies = [
 tests = [
     "pytest",
     "ruff",
-    "mypy"
+    "mypy>=1.18.2"
     ]
 
 [tool.mypy]
