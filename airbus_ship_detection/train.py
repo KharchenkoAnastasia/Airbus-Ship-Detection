@@ -1,13 +1,13 @@
 from pathlib import Path
 
 import pandas as pd
-from data_exploration import (
+from sklearn.model_selection import train_test_split
+
+from airbus_ship_detection.data_exploration import (
     ship_count_distribution,
     show_example_data,
 )
-from data_processing import balance_data
-from sklearn.model_selection import train_test_split
-
+from airbus_ship_detection.data_processing import balance_data
 from airbus_ship_detection.model import UNet
 
 ROOT_DIR = Path(__file__).parent.parent

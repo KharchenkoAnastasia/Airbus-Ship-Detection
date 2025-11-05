@@ -3,10 +3,11 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
-from data_processing import keras_generator
 from tensorflow.keras.layers import Concatenate, Conv2D, Input, MaxPooling2D, UpSampling2D
 from tensorflow.keras.models import Model
 from utils.loss import dice_coeff, loss
+
+from airbus_ship_detection.data_processing import keras_generator
 
 
 class UNet:
