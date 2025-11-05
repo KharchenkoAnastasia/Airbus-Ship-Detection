@@ -8,7 +8,7 @@ from data_exploration import (
 from data_processing import balance_data
 from sklearn.model_selection import train_test_split
 
-from model import UNet
+from airbus_ship_detection.model import UNet
 
 ROOT_DIR = Path(__file__).parent.parent
 TRAIN_V2 = ROOT_DIR / "data" / "train_v2"

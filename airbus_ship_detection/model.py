@@ -128,3 +128,6 @@ class UNet:
         model_folder.mkdir(parents=True, exist_ok=True)
         model_path = model_folder / "unet_model.h5"
         self.unet_model.save(str(model_path))
+
+
+__all__ = ["UNet"]
