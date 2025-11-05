@@ -28,7 +28,7 @@ jobs:
     - name: Show structure after install
       run: |
         echo "=== Project structure ==="
-        tree -L 3 || ls -R
+        tree /F /A
 
     - name: Run ruff
       run: |
