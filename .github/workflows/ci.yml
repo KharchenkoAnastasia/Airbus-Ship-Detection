@@ -25,6 +25,10 @@ jobs:
     - name: Install package
       run: pip install .[tests] --no-deps
 
+    - name: Show structure after install
+      run: |
+        tree -L 3 || ls -R
+
     - name: Run ruff
       run: |
         ruff check ./airbus_ship_detection
