@@ -25,11 +25,6 @@ jobs:
     - name: Install package
       run: pip install .[tests] --no-deps
 
-    - name: Show structure after install
-      run: |
-        echo "=== Project structure ==="
-        tree /F /A
-
     - name: Run ruff
       run: |
         ruff check ./airbus_ship_detection
